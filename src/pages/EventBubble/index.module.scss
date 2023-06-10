@@ -1,0 +1,17 @@
+.div1 {
+    margin: 100px;
+    padding: 50px;
+    border: 1px solid black;
+    background-color: brown;
+    .div2 {
+      padding: 50px;
+      border: 1px solid black;
+      background-color: blue;
+      .div3 {
+        padding: 50px;
+        border: 1px solid black;
+        background-color: chartreuse;
+      }
+    }
+  }
+  

@@ -4,6 +4,9 @@
     height: 500px;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
+    .box {
+      border: 1px solid;
+    }
     .snake {
       background-color: green;
     }

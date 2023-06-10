@@ -57,7 +57,8 @@ const File = ({ name, children = [], depth, showChildsInitially = false }) => {
           {name}
         </div>
       )}
-      {showChilds && children.map((c) => <File {...c} depth={depth + 1} />)}
+      {showChilds &&
+        children.map((c, i) => <File {...c} depth={depth + 1} key={i} />)}
     </div>
   );
 };
