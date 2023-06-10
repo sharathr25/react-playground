@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./index.css";
+import styles from "./index.module.scss";
 
 const HEXADECIMALS = "0123456789ABCEF";
 const NUM_OF_OPTIONS = 3;
@@ -39,16 +39,16 @@ const ColorGuess = () => {
   };
 
   return (
-    <div className="main">
+    <div className={styles.main}>
       <div
-        className="crt-color"
+        className={styles["crt-color"]}
         style={{ backgroundColor: colors[correctOption] }}
       />
-      <div className="color-options">
+      <div className={styles["color-options"]}>
         {colors.map((c, i) => (
           <button
             key={c}
-            className="btn-option"
+            className={styles["btn-option"]}
             onClick={onClick.bind(null, i)}
             disabled={clicked}
           >

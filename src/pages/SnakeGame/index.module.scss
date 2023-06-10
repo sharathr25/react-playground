@@ -1,0 +1,11 @@
+.arena {
+    display: grid;
+    width: 500px;
+    height: 500px;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    .snake {
+      background-color: green;
+    }
+  }
+  

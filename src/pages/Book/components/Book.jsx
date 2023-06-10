@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./Book.css";
+import styles from "./Book.module.scss";
 
 const Book = ({ book }) => {
   const { title, pages } = book;
@@ -18,14 +18,14 @@ const Book = ({ book }) => {
   }, [book]);
 
   return (
-    <div className="book">
-      <div className="book__title">{title}</div>
-      <div className="book__page">{pages[currentPageNum]}</div>
-      <div className="book__controller">
+    <div className={styles.book}>
+      <div className={styles.title}>{title}</div>
+      <div className={styles.page}>{pages[currentPageNum]}</div>
+      <div className={styles.controller}>
         <button onClick={prevPage} disabled={currentPageNum === 0}>
           {"<"}
         </button>
-        <div className="book__current-page">{currentPageNum + 1}</div>
+        <div className={styles["current-page"]}>{currentPageNum + 1}</div>
         <button
           onClick={nextPage}
           disabled={currentPageNum === pages.length - 1}

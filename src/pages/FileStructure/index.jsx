@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./index.css";
+import styles from "./index.module.scss";
 
 const files = [
   {
@@ -44,15 +44,15 @@ const File = ({ name, children = [], depth, showChildsInitially = false }) => {
   };
 
   return (
-    <div className="file" style={{ marginLeft: `${depth * 10}px` }}>
+    <div className={styles.file} style={{ marginLeft: `${depth * 10}px` }}>
       {name && (
-        <div className="file__name">
+        <div className={styles.name}>
           {children.length ? (
             <button onClick={onClick} className="file__btn">
               {showChilds ? "-" : "+"}
             </button>
           ) : (
-            <div className="file__btn-placeholder" />
+            <div className={styles["btn-placeholder"]} />
           )}
           {name}
         </div>
@@ -64,7 +64,7 @@ const File = ({ name, children = [], depth, showChildsInitially = false }) => {
 
 const FileStructure = () => {
   return (
-    <div className="main">
+    <div className={styles.main}>
       <File children={files} depth={0} showChildsInitially={true} />
     </div>
   );

@@ -8,7 +8,7 @@ import MemoryGame from "./pages/MemoryGame";
 import FileStructure from "./pages/FileStructure";
 import Wordle from "./pages/Wordle";
 
-import "./index.css";
+import "./index.module.scss";
 
 const router = createBrowserRouter([
   {

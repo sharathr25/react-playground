@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Book from "./components/Book";
-import "./index.css";
+import styles from "./index.module.scss";
 
 const books = [
   {
@@ -28,12 +28,12 @@ const BookPage = () => {
   };
 
   return (
-    <div className="main">
-      <div className="nav">
+    <div className={styles.main}>
+      <div className={styles.nav}>
         {books.map(({ title, id }) => (
           <button
             onClick={onBookClick.bind(null, id)}
-            className="book-btn"
+            className={styles["book-btn"]}
             key={id}
           >
             {title}

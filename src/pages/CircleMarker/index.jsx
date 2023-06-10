@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./index.css";
+import styles from "./index.module.scss";
 
 const CircleMarker = () => {
   const [addedPoints, setAddedPoints] = useState([]);
@@ -26,19 +26,19 @@ const CircleMarker = () => {
   };
 
   return (
-    <div className="circle-marker">
-      <div className="circle-marker__btns">
-        <button className="btn" onClick={undo} disabled={!addedPoints.length}>
+    <div className={styles["circle-marker"]}>
+      <div className={styles.btns}>
+        <button className={styles.btn} onClick={undo} disabled={!addedPoints.length}>
           undo
         </button>
-        <button className="btn" onClick={redo} disabled={!poppedPoints.length}>
+        <button className={styles.btn} onClick={redo} disabled={!poppedPoints.length}>
           redo
         </button>
       </div>
-      <div onClick={onClick} className="circle-marker__circles">
+      <div onClick={onClick} className={styles.circles}>
         {addedPoints.map((p, i) => (
           <div
-            className="circle-marker__circle"
+            className={styles.circle}
             style={{ top: p.y, left: p.x }}
             key={p.x + p.y + i}
           />

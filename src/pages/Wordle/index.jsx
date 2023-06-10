@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import styles from "./index.module.css";
+import styles from "./index.module.scss";
 import { getRandomWord } from "./words";
 
 const WORD_LENGTH = 5;

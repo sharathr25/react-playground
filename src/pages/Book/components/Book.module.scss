@@ -1,0 +1,23 @@
+.book {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
+    .page {
+        width: 500px;
+        height: 700px;
+        margin: 20px 0; 
+        border: 1px solid white;
+        padding: 10px;
+    }
+    .controller {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .current-page {
+        margin: 0 10px;
+    }
+}

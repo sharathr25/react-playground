@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import "./index.css";
+import styles from "./index.module.scss";
 
 const HIDE_TIME_IN_MS = 1000;
 const TO_REMEMBER = 2;
 const GRID_SIZE = 2;
+const NUMBER_OF_OPTIONS = 4;
 
 const getNumbersInRandomOrder = (toRemember, numberOfOptions) => {
   return [0, 1, 1, 0];
@@ -41,23 +42,23 @@ const MemoryGame = () => {
   }, [correctGuesses]);
 
   return (
-    <div className="memory-game">
-      <div className="memory-game__grid">
+    <div className={styles["memory-game"]}>
+      <div className={styles.grid}>
         {numbers.map((n, i) => (
           <div
-            className="memory-game__grid-item"
+            className={styles["grid-item"]}
             onClick={onClick.bind(null, i)}
             key={`${n} + ${i}`}
           >
             <div
-              className={`memory-game__grid-item-inner ${
+              className={`${styles.inner} ${
                 guesses.includes(i) || correctGuesses.has(n)
-                  ? "memory-game__grid-item-inner--show"
+                  ? styles.show
                   : ""
               }`}
             >
-              <div className="memory-game__grid-item-frontface">*</div>
-              <div className="memory-game__grid-item-backface">{n}</div>
+              <div className={styles.frontface}>*</div>
+              <div className={styles.backface}>{n}</div>
             </div>
           </div>
         ))}
