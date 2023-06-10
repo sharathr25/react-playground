@@ -1,0 +1,29 @@
+.main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+ }
+
+.file {
+    width: 250px;
+}
+
+.file__name {
+    margin: 10px;
+    padding: 5px;
+}
+
+.file__btn {
+    margin-right: 5px;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+}
+
+.file__btn-placeholder {
+    margin-right: 5px;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: inline-block;
+}

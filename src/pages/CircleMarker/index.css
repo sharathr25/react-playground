@@ -1,0 +1,25 @@
+.circle-marker {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-direction: column;
+}
+
+.circle-marker__btn {
+   margin: 0 10px;
+}
+
+.circle-marker__circles {
+   width: 100vw;
+   height: 100vh;
+   border: 1px solid white;
+   position: relative;
+}
+
+.circle-marker__circle {
+   width:25px;
+   height: 25px;
+   border-radius: 50%;
+   background-color: red;
+   position: absolute;
+}
