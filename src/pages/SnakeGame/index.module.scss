@@ -1,14 +1,36 @@
-.arena {
+.main {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  .arena {
     display: grid;
     width: 500px;
     height: 500px;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
+    margin-bottom: 10px;
     .box {
       border: 1px solid;
     }
     .snake {
       background-color: green;
     }
+    .fruit {
+      background-color: red;
+    }
   }
+  .msg {
+    height: 30px;
+  }
+  .show {
+    opacity: 1;
+  }
+  .hide {
+    opacity: 0;
+  }
+}
+
   

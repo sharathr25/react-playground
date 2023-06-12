@@ -1,5 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import * as classes from "./index.module.scss";
+import React, { useEffect, useReducer, useRef } from "react";
+import classes from "./index.module.scss";
+
+const SIZE = 10;
+const SPEED = 1000;
+const DIRECTIONS_MAP = {
+  w: [-1, 0],
+  s: [1, 0],
+  a: [0, -1],
+  d: [0, 1],
+};
 
 const coords = (size) =>
   Array(size)
@@ -7,71 +16,92 @@ const coords = (size) =>
     .map(() => Array(size).fill(null))
     .reduce((acc, cur, x) => [...acc, ...cur.map((_, y) => [x, y])], []);
 
-const DIRECTIONS_MAP = {
-  w: "up",
-  s: "down",
-  a: "left",
-  d: "right",
+const getRandomCoord = (limit) => [
+  Math.floor(Math.random() * limit),
+  Math.floor(Math.random() * limit),
+];
+
+const pointsEqual =
+  ([x1, y1]) =>
+  ([x2, y2]) =>
+    x1 === x2 && y1 === y2;
+
+const checkCollision = (x, y, size) => x < 0 || x >= size || y < 0 || y >= size;
+
+const checkFruitCollision = pointsEqual;
+
+const nextState = (oldState) => (newState) => ({ ...oldState, ...newState });
+
+const initialState = {
+  snake: [
+    [4, 4],
+    [5, 4],
+    [6, 4],
+  ],
+  direction: [-1, 0],
+  fruit: [0, 0],
+  gameOverMsg: "PRESS START",
 };
 
-const Arena = ({ size = 10 }) => {
-  const [snake, setSnake] = useState({
-    body: [
-      [4, 4],
-      [5, 4],
-      [6, 4],
-    ],
-    direction: "up",
-  });
-  const requestRef = React.useRef();
-  const previousTimeRef = React.useRef(0);
+const Arena = ({ size = SIZE }) => {
+  const requestRef = useRef();
 
-  const moveInNewDirection = (newDirection) => {
-    setSnake((prev) => {
-      const { body, direction } = prev;
-      const newCoords = [...body];
-      let [x, y] = newCoords[0];
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "GAME_LOOP": {
+        const { snake, direction, fruit } = state;
+        const newSnake = JSON.parse(JSON.stringify(snake));
+        let newFruit = fruit;
+        const x = newSnake[0][0] + direction[0];
+        const y = newSnake[0][1] + direction[1];
 
-      if (newDirection === "up" && direction !== "down") x -= 1;
-      else if (newDirection === "down" && direction !== "up") x += 1;
-      else if (newDirection === "left" && direction !== "right") y -= 1;
-      else if (newDirection === "right" && direction !== "left") y += 1;
-      else return prev;
+        if (checkCollision(x, y, size))
+          return nextState(initialState)({ gameOverMsg: "GAME OVER" });
 
-      newCoords.pop();
-      return { body: [[x, y], ...newCoords], direction: newDirection };
-    });
-  };
-
-  const handleKeyPress = ({ key }) => {
-    moveInNewDirection(DIRECTIONS_MAP[key]);
-  };
-
-  const moveInSameDirection = (time) => {
-    if (time - previousTimeRef.current >= 1000) {
-      previousTimeRef.current = time;
-      setSnake((prev) => {
-        const { body, direction } = prev;
-        const newCoords = [...body];
-        let [x, y] = newCoords[0];
-
-        if (direction === "up") x -= 1;
-        else if (direction === "down") x += 1;
-        else if (direction === "left") y -= 1;
-        else if (direction === "right") y += 1;
-
-        if (x < 0 || x > size - 1 || y < 0 || y > size - 1) {
-          alert("OUT!!!");
-          cancelAnimationFrame(requestRef.current);
-          return prev;
+        if (checkFruitCollision([x, y])(fruit)) {
+          do newFruit = getRandomCoord(size);
+          while (snake.find((s) => checkFruitCollision(s)(newFruit)));
+        } else {
+          newSnake.pop();
         }
 
-        newCoords.pop();
-        return { body: [[x, y], ...newCoords], direction };
-      });
+        return nextState(state)({
+          snake: [[x, y], ...newSnake],
+          fruit: newFruit,
+        });
+      }
+
+      case "SET_NEW_DIRECTION":
+        return nextState(state)({ direction: action.payload });
+
+      case "START_GAME":
+        return nextState(initialState)({ gameOverMsg: "" });
+
+      default:
+        return state;
     }
-    requestRef.current = requestAnimationFrame(moveInSameDirection);
   };
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const handleKeyPress = ({ key }) =>
+    key in DIRECTIONS_MAP &&
+    dispatch({ type: "SET_NEW_DIRECTION", payload: DIRECTIONS_MAP[key] });
+
+  const gameLoop = (t1) => (t2) => {
+    if (t2 - t1 >= SPEED) {
+      dispatch({ type: "GAME_LOOP" });
+      requestRef.current = requestAnimationFrame(gameLoop(t2));
+    } else {
+      requestRef.current = requestAnimationFrame(gameLoop(t1));
+    }
+  };
+
+  const startGame = () => {
+    dispatch({ type: "START_GAME" });
+    requestAnimationFrame(gameLoop(0));
+  };
+
+  const { snake, fruit, gameOverMsg } = state;
 
   useEffect(() => {
     document.addEventListener("keyup", handleKeyPress);
@@ -79,23 +109,35 @@ const Arena = ({ size = 10 }) => {
   }, []);
 
   useEffect(() => {
-    requestRef.current = requestAnimationFrame(moveInSameDirection);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []);
+    if (gameOverMsg) {
+      cancelAnimationFrame(requestRef.current);
+    }
+  }, [gameOverMsg]);
 
   return (
-    <div className={classes.arena}>
-      {coords(size).map(([x, y], i) => {
-        const isSnakeBody = snake.body.find(
-          ([snakeX, snakeY]) => x === snakeX && y === snakeY
-        );
-        return (
-          <div
-            key={i}
-            className={`${classes.box} ${isSnakeBody ? classes.snake : ""}`}
-          />
-        );
-      })}
+    <div className={classes.main}>
+      <div className={classes.arena}>
+        {coords(size).map((c, i) => {
+          const isCoordinate = pointsEqual(c);
+          const isSnakeBody = snake.find((s) => isCoordinate(s));
+          const isFruit = isCoordinate(fruit);
+          return (
+            <div
+              key={i}
+              className={`${classes.box} ${
+                isSnakeBody ? classes.snake : isFruit ? classes.fruit : ""
+              }`}
+            />
+          );
+        })}
+      </div>
+      <div className={classes.msg}>{gameOverMsg}</div>
+      <button
+        onClick={gameOverMsg ? startGame : () => {}}
+        className={gameOverMsg ? classes.show : classes.hide}
+      >
+        START GAME
+      </button>
     </div>
   );
 };
