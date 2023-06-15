@@ -12,13 +12,14 @@ import SnakeGame from "./pages/SnakeGame";
 import Hooks from "./pages/Hooks";
 import EventCapture from "./pages/EventCapture";
 import EventBubble from "./pages/EventBubble";
+import ClassComponents from "./pages/ClassComponents";
 
 import "./index.module.scss";
 
 const routes = [
   {
     path: "/books",
-    element: <BookPage />
+    element: <BookPage />,
   },
   {
     path: "/color-guess",
@@ -45,20 +46,27 @@ const routes = [
     element: <SnakeGame />,
   },
   {
-    path: '/hooks',
+    path: "/hooks",
     element: <Hooks />,
   },
   {
-    path: '/event-capture',
+    path: "/event-capture",
     element: <EventCapture />,
   },
   {
-    path: '/event-bubble',
+    path: "/event-bubble",
     element: <EventBubble />,
-  }
-]
+  },
+  {
+    path: "/class-components",
+    element: <ClassComponents />,
+  },
+];
 
-routes.push({ path: '/', element: <Home routes={routes.map(r => r.path)}/>})
+routes.push({
+  path: "/",
+  element: <Home routes={routes.map((r) => r.path)} />,
+});
 
 const router = createBrowserRouter(routes);
 
