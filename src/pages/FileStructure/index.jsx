@@ -1,74 +1,41 @@
 import { useState } from "react";
+import { files } from "./mockData";
+
 import styles from "./index.module.scss";
 
-const files = [
-  {
-    name: "file 1",
-    children: [
-      {
-        name: "child file 11",
-      },
-      {
-        name: "child file 12",
-      },
-    ],
-  },
-  { name: "file2" },
-  {
-    name: "file 3",
-    children: [
-      {
-        name: "child file 31",
-      },
-      {
-        name: "child file 32",
-        children: [
-          {
-            name: "child file 321",
-          },
-          {
-            name: "child file 322",
-          },
-        ],
-      },
-    ],
-  },
-  { name: "file4" },
-];
+const { file, btn, hide } = styles;
+const INDENT = 8;
 
-const File = ({ name, children = [], depth, showChildsInitially = false }) => {
-  const [showChilds, setShowChilds] = useState(showChildsInitially);
+const File = ({ name, files = [], depth }) => {
+  const [showFiles, setShowFiles] = useState(depth == 0);
 
-  const onClick = () => {
-    setShowChilds((prev) => !prev);
+  const onClick = () => setShowFiles((prev) => !prev);
+
+  const renderBtn = () => {
+    if (!name) return null;
+    if (!files.length) return <button disabled className={`${btn} ${hide}`} />;
+    return (
+      <button onClick={onClick} className={btn}>
+        {showFiles ? "-" : "+"}
+      </button>
+    );
   };
 
+  const renderFile = (f, i) => <File {...f} depth={depth + 1} key={i} />;
+
   return (
-    <div className={styles.file} style={{ marginLeft: `${depth * 10}px` }}>
-      {name && (
-        <div className={styles.name}>
-          {children.length ? (
-            <button onClick={onClick} className="file__btn">
-              {showChilds ? "-" : "+"}
-            </button>
-          ) : (
-            <div className={styles["btn-placeholder"]} />
-          )}
-          {name}
-        </div>
-      )}
-      {showChilds &&
-        children.map((c, i) => <File {...c} depth={depth + 1} key={i} />)}
+    <div className={file} style={{ marginLeft: `${depth * INDENT}px` }}>
+      {renderBtn()}
+      {name}
+      {showFiles && files.map(renderFile)}
     </div>
   );
 };
 
-const FileStructure = () => {
-  return (
-    <div className={styles.main}>
-      <File children={files} depth={0} showChildsInitially={true} />
-    </div>
-  );
-};
+const FileStructure = () => (
+  <div className={styles.main}>
+    <File files={files} depth={0} />
+  </div>
+);
 
 export default FileStructure;

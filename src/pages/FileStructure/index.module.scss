@@ -1,25 +1,21 @@
 .main {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
     flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    margin: 100px;
     .file {
-        width: 250px;
-        .name {
-            margin: 10px;
-            padding: 5px;
-        }
         .btn {
-            margin-right: 5px;
+            margin: 0 5px 0px 0;
             width: 1.5rem;
             height: 1.5rem;
             padding: 0;
-        }
-        .btn-placeholder {
-            margin-right: 5px;
-            width: 1.5rem;
-            height: 1.5rem;
-            display: inline-block;
+            &.hide {
+                opacity: 0;
+                cursor: default;
+            }
         }
     }
 }
