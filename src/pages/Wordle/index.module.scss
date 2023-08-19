@@ -4,6 +4,7 @@
     justify-content: center;
     flex-direction: column;
     height: 100vh;
+    width: 100vw;
 }
 
 .word {
@@ -20,15 +21,15 @@
     perspective: 1000px;
 }
 
-.with-blue-background {
-    background-color: darkblue;
+.gray-bg {
+    background-color: gray;
 }
 
-.with-coral-background {
+.coral-bg {
     background-color: coral;
 }
 
-.with-green-background {
+.green-bg {
     background-color: green;
 }
 
