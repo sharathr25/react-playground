@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
-import { getRandomWord, wordToCharIdxMap } from "./words";
+import { getRandomWord, wordToCharIdxMap } from "../../utils/strings";
 
 import styles from "./index.module.scss";
 import "react-toastify/dist/ReactToastify.css";

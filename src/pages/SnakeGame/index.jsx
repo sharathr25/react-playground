@@ -1,4 +1,5 @@
 import React, { useEffect, useReducer, useRef } from "react";
+import { getRandomCoord, coords, pointsEqual } from "../../utils/geometry";
 import classes from "./index.module.scss";
 
 const SIZE = 10;
@@ -10,25 +11,12 @@ const DIRECTIONS_MAP = {
   d: [0, 1],
 };
 
-const coords = (size) =>
-  Array(size)
-    .fill(null)
-    .map(() => Array(size).fill(null))
-    .reduce((acc, cur, x) => [...acc, ...cur.map((_, y) => [x, y])], []);
-
-const getRandomCoord = (limit) => [
-  Math.floor(Math.random() * limit),
-  Math.floor(Math.random() * limit),
-];
-
-const pointsEqual =
-  ([x1, y1]) =>
-  ([x2, y2]) =>
-    x1 === x2 && y1 === y2;
-
-const checkCollision = (x, y, size) => x < 0 || x >= size || y < 0 || y >= size;
+const checkWallCollision = (x, y, size) =>
+  x < 0 || x >= size || y < 0 || y >= size;
 
 const checkFruitCollision = pointsEqual;
+
+const checkSnakeSelfCollision = pointsEqual;
 
 const nextState = (oldState) => (newState) => ({ ...oldState, ...newState });
 
@@ -40,11 +28,11 @@ const initialState = {
   ],
   direction: [-1, 0],
   fruit: [0, 0],
-  gameOverMsg: "PRESS START",
+  msg: "PRESS START",
 };
 
 const Arena = ({ size = SIZE }) => {
-  const requestRef = useRef();
+  const gameLoopRef = useRef();
 
   const reducer = (state, action) => {
     switch (action.type) {
@@ -55,8 +43,11 @@ const Arena = ({ size = SIZE }) => {
         const x = newSnake[0][0] + direction[0];
         const y = newSnake[0][1] + direction[1];
 
-        if (checkCollision(x, y, size))
-          return nextState(initialState)({ gameOverMsg: "GAME OVER" });
+        if (checkWallCollision(x, y, size))
+          return nextState(initialState)({ msg: "GAME OVER" });
+
+        if (snake.find((s) => checkSnakeSelfCollision(s)([x, y])))
+          return nextState(initialState)({ msg: "GAME OVER" });
 
         if (checkFruitCollision([x, y])(fruit)) {
           do newFruit = getRandomCoord(size);
@@ -75,7 +66,7 @@ const Arena = ({ size = SIZE }) => {
         return nextState(state)({ direction: action.payload });
 
       case "START_GAME":
-        return nextState(initialState)({ gameOverMsg: "" });
+        return nextState(initialState)({ msg: "" });
 
       default:
         return state;
@@ -90,18 +81,19 @@ const Arena = ({ size = SIZE }) => {
   const gameLoop = (t1) => (t2) => {
     if (t2 - t1 >= SPEED) {
       dispatch({ type: "GAME_LOOP" });
-      requestRef.current = requestAnimationFrame(gameLoop(t2));
+      gameLoopRef.current = requestAnimationFrame(gameLoop(t2));
     } else {
-      requestRef.current = requestAnimationFrame(gameLoop(t1));
+      gameLoopRef.current = requestAnimationFrame(gameLoop(t1));
     }
   };
 
   const startGame = () => {
+    if (!msg) return;
     dispatch({ type: "START_GAME" });
     requestAnimationFrame(gameLoop(0));
   };
 
-  const { snake, fruit, gameOverMsg } = state;
+  const { snake, fruit, msg } = state;
 
   useEffect(() => {
     document.addEventListener("keyup", handleKeyPress);
@@ -109,33 +101,30 @@ const Arena = ({ size = SIZE }) => {
   }, []);
 
   useEffect(() => {
-    if (gameOverMsg) {
-      cancelAnimationFrame(requestRef.current);
+    if (msg) {
+      cancelAnimationFrame(gameLoopRef.current);
     }
-  }, [gameOverMsg]);
+  }, [msg]);
+
+  const renderCoord = (c, i) => {
+    const isCoordinate = pointsEqual(c);
+    const isSnake = snake.find(isCoordinate);
+    const isFruit = isCoordinate(fruit);
+    return (
+      <div
+        key={i}
+        className={`${classes.box} ${
+          isSnake ? classes.snake : isFruit ? classes.fruit : ""
+        }`}
+      />
+    );
+  };
 
   return (
     <div className={classes.main}>
-      <div className={classes.arena}>
-        {coords(size).map((c, i) => {
-          const isCoordinate = pointsEqual(c);
-          const isSnakeBody = snake.find((s) => isCoordinate(s));
-          const isFruit = isCoordinate(fruit);
-          return (
-            <div
-              key={i}
-              className={`${classes.box} ${
-                isSnakeBody ? classes.snake : isFruit ? classes.fruit : ""
-              }`}
-            />
-          );
-        })}
-      </div>
-      <div className={classes.msg}>{gameOverMsg}</div>
-      <button
-        onClick={gameOverMsg ? startGame : () => {}}
-        className={gameOverMsg ? classes.show : classes.hide}
-      >
+      <div className={classes.arena}>{coords(size).map(renderCoord)}</div>
+      <div className={classes.msg}>{msg}</div>
+      <button onClick={startGame} className={classes[msg ? "show" : "hide"]}>
         START GAME
       </button>
     </div>
