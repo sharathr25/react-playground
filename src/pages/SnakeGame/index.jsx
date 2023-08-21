@@ -49,6 +49,7 @@ const Arena = ({ size = SIZE }) => {
         if (snake.find((s) => checkSnakeSelfCollision(s)([x, y])))
           return nextState(initialState)({ msg: "GAME OVER" });
 
+        newSnake.unshift([x, y]);
         if (checkFruitCollision([x, y])(fruit)) {
           do newFruit = getRandomCoord(size);
           while (snake.find((s) => checkFruitCollision(s)(newFruit)));
@@ -57,7 +58,7 @@ const Arena = ({ size = SIZE }) => {
         }
 
         return nextState(state)({
-          snake: [[x, y], ...newSnake],
+          snake: newSnake,
           fruit: newFruit,
         });
       }
@@ -106,18 +107,17 @@ const Arena = ({ size = SIZE }) => {
     }
   }, [msg]);
 
-  const renderCoord = (c, i) => {
+  const getCoordCls = (c) => {
     const isCoordinate = pointsEqual(c);
     const isSnake = snake.find(isCoordinate);
     const isFruit = isCoordinate(fruit);
-    return (
-      <div
-        key={i}
-        className={`${classes.box} ${
-          isSnake ? classes.snake : isFruit ? classes.fruit : ""
-        }`}
-      />
-    );
+    if (isSnake) return classes.snake;
+    if (isFruit) return classes.fruit;
+    return "";
+  };
+
+  const renderCoord = (c, i) => {
+    return <div key={i} className={`${classes.box} ${getCoordCls(c)}`} />;
   };
 
   return (
