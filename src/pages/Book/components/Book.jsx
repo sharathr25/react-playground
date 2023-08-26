@@ -19,7 +19,7 @@ const Book = ({ book }) => {
 
   return (
     <div className={styles.book}>
-      <div className={styles.title}>{title}</div>
+      <h2>{title}</h2>
       <div className={styles.page}>{pages[currentPageNum]}</div>
       <div className={styles.controller}>
         <button onClick={prevPage} disabled={currentPageNum === 0}>

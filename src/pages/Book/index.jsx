@@ -31,11 +31,7 @@ const BookPage = () => {
     <div className={styles.main}>
       <div className={styles.nav}>
         {books.map(({ title, id }) => (
-          <button
-            onClick={onBookClick.bind(null, id)}
-            className={styles["book-btn"]}
-            key={id}
-          >
+          <button onClick={onBookClick.bind(null, id)} key={id}>
             {title}
           </button>
         ))}

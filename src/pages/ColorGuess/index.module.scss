@@ -3,19 +3,19 @@
    align-items: center;
    justify-content: center;
    flex-direction: column;
-}
-
-.crt-color {
-   width: 100px;
-   height: 100px;
-   border-radius: 10px;
-   margin: 10px 0;
-}
-
-.color-options {
-   display: flex;
-}
-
-.btn-option {
-   margin: 0 10px;
+   width: 100vw;
+   height: 100vh;
+   .crt-color {
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+      margin: 10px 0;
+   }
+   
+   .color-options {
+      display: flex;
+      .btn-option {
+         margin: 0 10px;
+      }
+   }
 }

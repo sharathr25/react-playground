@@ -1,62 +1,52 @@
 import { useEffect, useState } from "react";
 import styles from "./index.module.scss";
+import { getRandomHexColor } from "../../utils/strings";
+import { ToastContainer, toast } from "react-toastify";
 
-const HEXADECIMALS = "0123456789ABCEF";
 const NUM_OF_OPTIONS = 3;
-
-const getRandomHexColor = () =>
-  `#${new Array(6)
-    .fill()
-    .map(() =>
-      HEXADECIMALS.charAt(Math.floor(Math.random() * HEXADECIMALS.length))
-    )
-    .join("")}`;
+const RESET_TIME_IN_MS = 2000;
 
 const ColorGuess = () => {
   const [colors, setColors] = useState([]);
   const [correctOption, setCorrectOption] = useState(0);
-  const [status, setStatus] = useState();
   const [clicked, setClicked] = useState(false);
-
-  useEffect(() => {
-    setGame();
-  }, []);
-
-  const onClick = (colorOptionIndex) => {
-    setClicked(true);
-    if (colorOptionIndex === correctOption) setStatus("CORRECT :)");
-    else setStatus("WRONG :(");
-    setTimeout(setGame, 2000);
-  };
 
   const setGame = () => {
     setColors(
       new Array(NUM_OF_OPTIONS).fill(null).map(() => getRandomHexColor())
     );
     setCorrectOption(Math.floor(Math.random() * NUM_OF_OPTIONS));
-    setStatus(null);
     setClicked(false);
   };
 
+  const onClick = (colorOptionIndex) => {
+    setClicked(true);
+    if (colorOptionIndex === correctOption) toast.success("CORRECT :)");
+    else toast.error("WRONG :(");
+    setTimeout(setGame, RESET_TIME_IN_MS);
+  };
+
+  useEffect(setGame, []);
+
+  const renderColor = (color, i) => (
+    <button
+      key={color}
+      className={styles["btn-option"]}
+      onClick={onClick.bind(null, i)}
+      disabled={clicked}
+    >
+      {color}
+    </button>
+  );
+
   return (
     <div className={styles.main}>
+      <ToastContainer theme="dark" />
       <div
         className={styles["crt-color"]}
         style={{ backgroundColor: colors[correctOption] }}
       />
-      <div className={styles["color-options"]}>
-        {colors.map((c, i) => (
-          <button
-            key={c}
-            className={styles["btn-option"]}
-            onClick={onClick.bind(null, i)}
-            disabled={clicked}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
-      {status && <p>{status}</p>}
+      <div className={styles["color-options"]}>{colors.map(renderColor)}</div>
     </div>
   );
 };
