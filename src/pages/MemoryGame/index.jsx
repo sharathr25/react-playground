@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./index.module.scss";
-import { getNumbersInRandomOrder } from "../../utils/numbers";
+import { getNumbers, shuffleNumbers } from "../../utils/numbers";
 import { animalEmojis } from "../../constants/emojis";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -9,8 +9,14 @@ const ROWS = 2;
 const COLUMNS = 2;
 const BOX_SIZE = 75;
 
+const getNumbersToRemember = () => {
+  const set1 = getNumbers((ROWS * COLUMNS) / 2);
+  const set2 = getNumbers((ROWS * COLUMNS) / 2);
+  return shuffleNumbers([...set1, ...set2]);
+};
+
 const MemoryGame = () => {
-  const [tiles, setTiles] = useState(getNumbersInRandomOrder(ROWS, COLUMNS));
+  const [tiles, setTiles] = useState(getNumbersToRemember());
   const [guesses, setGuesses] = useState([]);
   const [correctGuesses, setCorrectGuesses] = useState(new Set());
 
@@ -28,17 +34,22 @@ const MemoryGame = () => {
   }, [guesses]);
 
   useEffect(() => {
-    if (correctGuesses.size === tiles.length / 2) {
-      toast.success("YOU WON :)");
-      resetGame();
-    }
+    if (correctGuesses.size === tiles.length / 2) toast.success("YOU WON :)");
   }, [correctGuesses]);
 
   const resetGame = () => {
     setGuesses([]);
     setCorrectGuesses(new Set());
-    setTiles(getNumbersInRandomOrder(ROWS, COLUMNS));
+    setTiles(getNumbersToRemember());
   };
+
+  useEffect(() => {
+    const unsubscribe = toast.onChange(({ status }) => {
+      if (status === "removed") resetGame();
+    });
+
+    return unsubscribe;
+  }, []);
 
   const renderTile = (n, i) => (
     <div

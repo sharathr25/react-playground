@@ -27,15 +27,15 @@ const BookPage = () => {
     setActiveBookId(id);
   };
 
+  const renderBook = ({ title, id }) => (
+    <button onClick={onBookClick.bind(null, id)} key={id}>
+      {title}
+    </button>
+  );
+
   return (
     <div className={styles.main}>
-      <div className={styles.nav}>
-        {books.map(({ title, id }) => (
-          <button onClick={onBookClick.bind(null, id)} key={id}>
-            {title}
-          </button>
-        ))}
-      </div>
+      <div className={styles.nav}>{books.map(renderBook)}</div>
       <Book book={books.find((b) => b.id === activeBookId)} />
     </div>
   );
