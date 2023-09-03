@@ -13,6 +13,7 @@ import Hooks from "./pages/Hooks";
 import EventCapture from "./pages/EventCapture";
 import EventBubble from "./pages/EventBubble";
 import ClassComponents from "./pages/ClassComponents";
+import TicTocToe from "./pages/TicTocToe";
 
 import "./index.module.scss";
 
@@ -60,6 +61,10 @@ const routes = [
   {
     path: "/class-components",
     element: <ClassComponents />,
+  },
+  {
+    path: "/tic-toc-toe",
+    element: <TicTocToe />,
   },
 ];
 
