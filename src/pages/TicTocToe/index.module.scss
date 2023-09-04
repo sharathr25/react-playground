@@ -4,37 +4,38 @@
     justify-content: center;
     width: 100vw;
     height: 100vh;
-    .tiles {
-        display: grid;
-        .tile {
-            border: 1px solid white;
+    .row {
+        display: flex;
+        flex-direction: column;
+        .col {
             display: flex;
-            align-items: center;
             justify-content: center;
-            position: relative;
+            align-items: center;
+            border: 1px solid white;
+            width: var(--size);
+            height: var(--size);
             .line {
                 position: absolute;
                 background: chocolate;
                 &.horizontal {
-                    width: 100%;
+                    width: var(--size);
                     height: 2px;
                 }
                 &.vertical {
                     width: 2px;
-                    height: 100%;
+                    height: var(--size);
                 }
                 &.topLeftDiagonal {
                     width: 2px;
-                    height: 150%;
+                    height: calc(var(--size) + 20px);
                     transform: rotateZ(-45deg);
                 }
                 &.topRightDiagonal {
                     width: 2px;
-                    height: 150%;
+                    height: calc(var(--size) + 20px);
                     transform: rotateZ(45deg);
                 }
             }
-            
         }
     }
 }

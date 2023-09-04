@@ -8,18 +8,14 @@ const HORIZONTAL = "horizontal";
 const VERTICAL = "vertical";
 const TOP_LEFT_DIAGONAL = "topLeftDiagonal";
 const TOP_RIGHT_DIAGONAL = "topRightDiagonal";
-const X = "X";
-const O = "O";
+const PLAYER1 = "X";
+const PLAYER2 = "O";
 
-const getIndex = ([x, y]) => SIZE * x + y;
-
-const getCoord = (index) => [Math.floor(index / SIZE), index % SIZE];
-
-function* horizontalIterator([x, y]) {
+function* verticalIterator([x, y]) {
   for (let j = x, k = y; k < SIZE; k++) yield [j, k];
 }
 
-function* verticalIterator([x, y]) {
+function* horizontalIterator([x, y]) {
   for (let j = x, k = y; j < SIZE; j++) yield [j, k];
 }
 
@@ -31,7 +27,8 @@ function* topRightDiagonalIterator([x, y]) {
   for (let j = x, k = y; (j >= 0) & (k < SIZE); j--, k++) yield [j, k];
 }
 
-const initialTiles = () => new Array(SIZE * SIZE).fill().map(() => "");
+const initialGrid = () =>
+  new Array(SIZE).fill().map(() => new Array(SIZE).fill().map(() => ""));
 
 const iterators = {
   [HORIZONTAL]: horizontalIterator,
@@ -41,39 +38,47 @@ const iterators = {
 };
 
 const TicTocToe = () => {
-  const [tiles, setTiles] = useState([]);
+  const [grid, setGrid] = useState([]);
   const [mark, setMark] = useState("");
   const [winingTiles, setWiningTiles] = useState([]);
   const [crossLineDirection, setCrossLineDirection] = useState(null);
 
-  const onClick = (i) => {
-    setTiles((prev) => prev.map((t, j) => (i === j ? mark : t)));
-    setMark((prev) => (prev === X ? O : X));
+  const onClick = (rowNum, colNum) => {
+    setGrid((prevGrid) =>
+      prevGrid.map((row, _rowNum) =>
+        rowNum === _rowNum
+          ? [...row].map((col, _colNum) => (colNum === _colNum ? mark : col))
+          : [...row]
+      )
+    );
+    setMark((prevMark) => (prevMark === PLAYER1 ? PLAYER2 : PLAYER1));
   };
 
   const setGame = () => {
-    setTiles(initialTiles());
-    setMark(X);
+    setGrid(initialGrid());
+    setMark(PLAYER1);
     setWiningTiles([]);
     setCrossLineDirection(null);
   };
 
   const checkWin = () => {
-    for (let i = 0; i < tiles.length; i++) {
-      const tile = tiles[i];
-      for (const direction in iterators) {
-        if (tile === "") break;
-        const tilesMatching = [];
-        const startCoord = getCoord(i);
-        const iterator = iterators[direction];
-        for (const coord of iterator(startCoord)) {
-          const index = getIndex(coord);
-          if (tiles[index] === tile) tilesMatching.push(index);
-          if (tilesMatching.length === SIZE) {
-            toast.success(tile + " WON :)");
-            setWiningTiles([...tilesMatching]);
-            setCrossLineDirection(direction);
-            return;
+    for (let rowNum = 0; rowNum < grid.length; rowNum++) {
+      const row = grid[rowNum];
+      for (let colNum = 0; colNum < row.length; colNum++) {
+        const mark = row[colNum];
+        for (const direction in iterators) {
+          if (mark === "") break;
+          const tilesMatching = [];
+          const iterator = iterators[direction];
+          for (const [_rowNum, _colNum] of iterator([rowNum, colNum])) {
+            if (grid[_rowNum][_colNum] === mark)
+              tilesMatching.push(`${_rowNum},${_colNum}`);
+            if (tilesMatching.length === SIZE) {
+              toast.success(`PLAYER ${mark === PLAYER1 ? " 1" : "2"} WON :)`);
+              setWiningTiles([...tilesMatching]);
+              setCrossLineDirection(direction);
+              return;
+            }
           }
         }
       }
@@ -81,16 +86,16 @@ const TicTocToe = () => {
   };
 
   const checkDraw = () => {
-    if (
-      winingTiles.length === 0 &&
-      tiles.filter((t) => t !== "").length === SIZE * SIZE
-    )
-      toast.warn("DRAW :|");
+    if (winingTiles.length !== 0) return;
+    const markedTiles = grid
+      .flat()
+      .reduce((acc, cur) => (cur === "" ? acc : acc + 1), 0);
+    if (markedTiles === SIZE * SIZE) toast.warn("DRAW :|");
   };
 
-  useEffect(checkWin, [tiles]);
+  useEffect(checkWin, [grid]);
 
-  useEffect(checkDraw, [tiles, winingTiles]);
+  useEffect(checkDraw, [grid, winingTiles]);
 
   useEffect(() => {
     const unsubscribe = toast.onChange(({ status }) => {
@@ -102,27 +107,28 @@ const TicTocToe = () => {
 
   useEffect(setGame, []);
 
-  const renderTile = (tile, i) => (
-    <div className={classes.tile} onClick={onClick.bind(null, i)} key={i}>
-      {winingTiles.includes(i) && (
-        <div className={`${classes.line} ${classes[crossLineDirection]}`} />
-      )}
-      {tile}
-    </div>
-  );
-
   return (
     <div className={classes.ticTocToe}>
       <ToastContainer theme="dark" />
-      <div
-        className={classes.tiles}
-        style={{
-          gridTemplateColumns: `repeat(${SIZE}, ${TILE_SIZE}px)`,
-          gridTemplateRows: `repeat(${SIZE}, ${TILE_SIZE}px)`,
-        }}
-      >
-        {tiles.map(renderTile)}
-      </div>
+      {grid.map((row, rowNum) => (
+        <div className={classes.row} key={rowNum}>
+          {row.map((col, colNum) => (
+            <div
+              className={classes.col}
+              key={colNum}
+              onClick={onClick.bind(null, rowNum, colNum)}
+              style={{ "--size": `${TILE_SIZE}px` }}
+            >
+              {winingTiles.includes(`${rowNum},${colNum}`) && (
+                <div
+                  className={`${classes.line} ${classes[crossLineDirection]}`}
+                />
+              )}
+              {col}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 };
