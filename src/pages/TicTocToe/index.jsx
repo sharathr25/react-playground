@@ -63,22 +63,21 @@ const TicTocToe = () => {
 
   const checkWin = () => {
     for (let rowNum = 0; rowNum < grid.length; rowNum++) {
-      const row = grid[rowNum];
-      for (let colNum = 0; colNum < row.length; colNum++) {
-        const mark = row[colNum];
+      for (let colNum = 0; colNum < grid[rowNum].length; colNum++) {
+        const mark = grid[rowNum][colNum];
+        if (mark === "") continue;
+
         for (const direction in iterators) {
-          if (mark === "") break;
-          const tilesMatching = [];
-          const iterator = iterators[direction];
-          for (const [_rowNum, _colNum] of iterator([rowNum, colNum])) {
-            if (grid[_rowNum][_colNum] === mark)
-              tilesMatching.push(`${_rowNum},${_colNum}`);
-            if (tilesMatching.length === SIZE) {
-              toast.success(`PLAYER ${mark === PLAYER1 ? " 1" : "2"} WON :)`);
-              setWiningTiles([...tilesMatching]);
-              setCrossLineDirection(direction);
-              return;
-            }
+          const matching = [];
+          for (const [rNum, cNum] of iterators[direction]([rowNum, colNum])) {
+            if (grid[rNum][cNum] === mark) matching.push(`${rNum},${cNum}`);
+            else break;
+          }
+          if (matching.length === SIZE) {
+            toast.success(`PLAYER ${mark === PLAYER1 ? " 1 " : " 2 "}WON :)`);
+            setWiningTiles(matching);
+            setCrossLineDirection(direction);
+            return;
           }
         }
       }
