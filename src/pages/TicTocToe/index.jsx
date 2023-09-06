@@ -27,9 +27,6 @@ function* topRightDiagonalIterator([x, y]) {
   for (let j = x, k = y; (j >= 0) & (k < SIZE); j--, k++) yield [j, k];
 }
 
-const initialGrid = () =>
-  new Array(SIZE).fill().map(() => new Array(SIZE).fill().map(() => ""));
-
 const iterators = {
   [HORIZONTAL]: horizontalIterator,
   [VERTICAL]: verticalIterator,
@@ -38,63 +35,43 @@ const iterators = {
 };
 
 const TicTocToe = () => {
-  const [grid, setGrid] = useState([]);
-  const [mark, setMark] = useState("");
-  const [winingTiles, setWiningTiles] = useState([]);
-  const [crossLineDirection, setCrossLineDirection] = useState(null);
+  const [mark, setMark] = useState(PLAYER1);
+  const [markedTiles, setMarkedTiles] = useState({});
+  const [strikedTiles, setStrikedTiles] = useState({});
 
   const onClick = (rowNum, colNum) => {
-    setGrid((prevGrid) =>
-      prevGrid.map((row, _rowNum) =>
-        rowNum === _rowNum
-          ? [...row].map((col, _colNum) => (colNum === _colNum ? mark : col))
-          : [...row]
-      )
-    );
+    setMarkedTiles((prev) => ({ ...prev, [[rowNum, colNum]]: mark }));
     setMark((prevMark) => (prevMark === PLAYER1 ? PLAYER2 : PLAYER1));
   };
 
   const setGame = () => {
-    setGrid(initialGrid());
+    setMarkedTiles({});
+    setStrikedTiles({});
     setMark(PLAYER1);
-    setWiningTiles([]);
-    setCrossLineDirection(null);
   };
 
-  const checkWin = () => {
-    for (let rowNum = 0; rowNum < grid.length; rowNum++) {
-      for (let colNum = 0; colNum < grid[rowNum].length; colNum++) {
-        const mark = grid[rowNum][colNum];
-        if (mark === "") continue;
-
-        for (const direction in iterators) {
-          const matching = [];
-          for (const [rNum, cNum] of iterators[direction]([rowNum, colNum])) {
-            if (grid[rNum][cNum] === mark) matching.push(`${rNum},${cNum}`);
-            else break;
-          }
-          if (matching.length === SIZE) {
-            toast.success(`PLAYER ${mark === PLAYER1 ? " 1 " : " 2 "}WON :)`);
-            setWiningTiles(matching);
-            setCrossLineDirection(direction);
-            return;
-          }
+  const checkWinOrDraw = () => {
+    for (const rowCol in markedTiles) {
+      const mark = markedTiles[rowCol];
+      const srcRowCol = rowCol.split(",").map((rc) => parseInt(rc));
+      for (const direction in iterators) {
+        const matching = {};
+        for (const rowCol of iterators[direction](srcRowCol)) {
+          if (markedTiles[rowCol] === mark) matching[rowCol] = mark;
+          else break;
+        }
+        if (Object.keys(matching).length === SIZE) {
+          toast.success(`PLAYER ${mark} WON :)`);
+          setStrikedTiles({ ...matching, direction });
+          return;
         }
       }
     }
+
+    if (Object.keys(markedTiles).length === SIZE * SIZE) toast.warn("DRAW :|");
   };
 
-  const checkDraw = () => {
-    if (winingTiles.length !== 0) return;
-    const markedTiles = grid
-      .flat()
-      .reduce((acc, cur) => (cur === "" ? acc : acc + 1), 0);
-    if (markedTiles === SIZE * SIZE) toast.warn("DRAW :|");
-  };
-
-  useEffect(checkWin, [grid]);
-
-  useEffect(checkDraw, [grid, winingTiles]);
+  useEffect(checkWinOrDraw, [markedTiles]);
 
   useEffect(() => {
     const unsubscribe = toast.onChange(({ status }) => {
@@ -104,26 +81,26 @@ const TicTocToe = () => {
     return unsubscribe;
   }, []);
 
-  useEffect(setGame, []);
-
   return (
     <div className={classes.ticTocToe}>
       <ToastContainer theme="dark" />
-      {grid.map((row, rowNum) => (
+      {new Array(SIZE).fill().map((_, rowNum) => (
         <div className={classes.row} key={rowNum}>
-          {row.map((col, colNum) => (
+          {new Array(SIZE).fill().map((_, colNum) => (
             <div
               className={classes.col}
               key={colNum}
               onClick={onClick.bind(null, rowNum, colNum)}
               style={{ "--size": `${TILE_SIZE}px` }}
             >
-              {winingTiles.includes(`${rowNum},${colNum}`) && (
+              {strikedTiles[[rowNum, colNum]] && (
                 <div
-                  className={`${classes.line} ${classes[crossLineDirection]}`}
+                  className={`${classes.line} ${
+                    classes[strikedTiles.direction]
+                  }`}
                 />
               )}
-              {col}
+              {markedTiles[[rowNum, colNum]]}
             </div>
           ))}
         </div>
