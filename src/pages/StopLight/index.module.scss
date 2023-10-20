@@ -1,0 +1,34 @@
+$lightSize: 75px;
+
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  .stop-light {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: black;
+    padding: 10px;
+    border-radius: 10px;
+    .light {
+      width: $lightSize;
+      height: $lightSize;
+      border-radius: 50%;
+      &.red {
+        background-color: red;
+      }
+      &.yellow {
+        background-color: yellow;
+      }
+      &.green {
+        background-color: green;
+      }
+      &.off {
+        background-color: gray;
+      }
+    }
+  }
+}

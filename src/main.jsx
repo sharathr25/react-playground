@@ -16,6 +16,7 @@ import ClassComponents from "./pages/ClassComponents";
 import TicTocToe from "./pages/TicTocToe";
 
 import "./index.module.scss";
+import StopLight from "./pages/StopLight";
 
 const routes = [
   {
@@ -65,6 +66,10 @@ const routes = [
   {
     path: "/tic-toc-toe",
     element: <TicTocToe />,
+  },
+  {
+    path: "/stop-light",
+    element: <StopLight />,
   },
 ];
 
