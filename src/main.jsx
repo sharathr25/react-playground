@@ -14,9 +14,10 @@ import EventCapture from "./pages/EventCapture";
 import EventBubble from "./pages/EventBubble";
 import ClassComponents from "./pages/ClassComponents";
 import TicTocToe from "./pages/TicTocToe";
+import StopLight from "./pages/StopLight";
+import WackAMole from "./pages/WackAMole";
 
 import "./index.module.scss";
-import StopLight from "./pages/StopLight";
 
 const routes = [
   {
@@ -70,6 +71,10 @@ const routes = [
   {
     path: "/stop-light",
     element: <StopLight />,
+  },
+  {
+    path: "/wack-a-mole",
+    element: <WackAMole />,
   },
 ];
 
