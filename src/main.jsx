@@ -16,6 +16,7 @@ import ClassComponents from "./pages/ClassComponents";
 import TicTocToe from "./pages/TicTocToe";
 import StopLight from "./pages/StopLight";
 import WackAMole from "./pages/WackAMole";
+import Slider from "./pages/Slider";
 
 import "./index.module.scss";
 
@@ -75,6 +76,10 @@ const routes = [
   {
     path: "/wack-a-mole",
     element: <WackAMole />,
+  },
+  {
+    path: "/slider",
+    element: <Slider />,
   },
 ];
 

@@ -1,0 +1,35 @@
+$slide-width: 100px;
+
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  .slides {
+    display: flex;
+    flex-direction: row;
+    width: $slide-width;
+    height: $slide-width;
+    overflow-x: hidden;
+    position: relative;
+    .slide {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: $slide-width;
+      height: $slide-width;
+      background-color: aquamarine;
+      color: black;
+      flex-shrink: 0;
+      transition: 1s;
+    }
+  }
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+  }
+}
