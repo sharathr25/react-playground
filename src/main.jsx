@@ -19,6 +19,7 @@ import WackAMole from "./pages/WackAMole";
 import Slider from "./pages/Slider";
 
 import "./index.module.scss";
+import PassCode from "./pages/PassCode";
 
 const routes = [
   {
@@ -80,6 +81,10 @@ const routes = [
   {
     path: "/slider",
     element: <Slider />,
+  },
+  {
+    path: "/passcpde",
+    element: <PassCode />,
   },
 ];
 
